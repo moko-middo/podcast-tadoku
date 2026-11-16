@@ -20,6 +20,7 @@ jobs:
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       WHISPER_MODEL: ${{ vars.WHISPER_MODEL || 'small.en' }}
+      PYTHONUNBUFFERED: '1' # 時間切れで止められてもログが残るように
     steps:
       - uses: actions/checkout@v4
         with:
