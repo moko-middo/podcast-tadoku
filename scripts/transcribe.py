@@ -9,6 +9,7 @@ GitHub Actions から実行される（.github/workflows/deploy.yml）。
 使い方:
   python3 scripts/transcribe.py           # 未処理の音声をすべて処理
   python3 scripts/transcribe.py --check   # 処理待ちの件数だけを出力
+  python3 scripts/transcribe.py --skip-translate   # 文字起こしだけ（和訳は次の実行で）
 """
 
 from __future__ import annotations
@@ -171,7 +172,7 @@ def gemini(prompt: str, as_json: bool) -> str:
         )
         for attempt in range(3):
             try:
-                with urllib.request.urlopen(req, timeout=180) as res:
+                with urllib.request.urlopen(req, timeout=90) as res:
                     data = json.load(res)
                 return data["candidates"][0]["content"]["parts"][0]["text"]
             except urllib.error.HTTPError as e:
@@ -188,7 +189,7 @@ def gemini(prompt: str, as_json: bool) -> str:
     raise RuntimeError(f"Gemini API が混雑していて応答がありません（{last_error}）")
 
 
-def translate(sentences: list[dict]) -> None:
+def translate(sentences: list[dict], on_progress=lambda: None) -> None:
     todo = [i for i, s in enumerate(sentences) if "ja" not in s]
     for b in range(0, len(todo), TRANSLATE_BATCH):
         idx = todo[b : b + TRANSLATE_BATCH]
@@ -210,6 +211,7 @@ def translate(sentences: list[dict]) -> None:
             raise RuntimeError("Gemini の訳を取得できませんでした")
         for i, ja in zip(idx, result):
             sentences[i]["ja"] = ja.strip()
+        on_progress()  # Actions の時間切れで止められても、訳せた分は残す
         print(f"  translated {min(b + TRANSLATE_BATCH, len(todo))}/{len(todo)}")
 
 
@@ -262,7 +264,7 @@ def process(audio: Path) -> None:
             except RuntimeError as e:
                 print(f"  タイトル生成に失敗: {e}")
         try:
-            translate(data["sentences"])
+            translate(data["sentences"], lambda: save(path, data))
         except RuntimeError as e:
             raise TranslationError(e) from None
         finally:
@@ -270,6 +272,9 @@ def process(audio: Path) -> None:
 
 
 def main() -> None:
+    global GEMINI_API_KEY
+    if "--skip-translate" in sys.argv:
+        GEMINI_API_KEY = ""
     todo = pending()
     if "--check" in sys.argv:
         print(len(todo))
@@ -277,7 +282,7 @@ def main() -> None:
     if not todo:
         print("[podcast] 処理待ちの音声はありません")
         return
-    if not GEMINI_API_KEY:
+    if not GEMINI_API_KEY and "--skip-translate" not in sys.argv:
         print("[podcast] GEMINI_API_KEY が未設定のため、和訳なしで文字起こしだけ行います")
     failed, untranslated = [], []
     for audio in todo:
