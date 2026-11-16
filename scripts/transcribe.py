@@ -4,6 +4,8 @@ GitHub Actions から実行される（.github/workflows/deploy.yml）。
 - 文字起こし: faster-whisper（単語ごとのタイミング付き）。モデルは環境変数 WHISPER_MODEL（既定 small.en）
 - 和訳: 環境変数 GEMINI_API_KEY があれば Gemini API で 1 文ずつ訳す。なければ訳なしで書き出し、
   あとからキーを設定すると次回の実行で訳だけを追加する
+- スクリプト: 音声と同じ名前の .txt があれば、英文はスクリプトのものを使い、Whisper の時刻を割り当てる。
+  英文の次の行に日本語があれば、それを和訳として使う（Gemini は使わない）
 - WAV / FLAC は容量削減のため MP3 に変換し、元ファイルは削除する
 
 使い方:
@@ -14,6 +16,8 @@ GitHub Actions から実行される（.github/workflows/deploy.yml）。
 
 from __future__ import annotations
 
+import difflib
+import hashlib
 import json
 import os
 import re
@@ -71,7 +75,11 @@ def pending() -> list[Path]:
     out = []
     for audio in audio_files():
         t = load(transcript_path(audio))
-        if t is None or (GEMINI_API_KEY and any("ja" not in s for s in t["sentences"])):
+        if (
+            t is None
+            or (script_path(audio).exists() and t.get("scriptHash") != script_hash(audio))
+            or (GEMINI_API_KEY and any("ja" not in s for s in t["sentences"]))
+        ):
             out.append(audio)
     return out
 
@@ -153,6 +161,121 @@ def to_sentences(words: list[tuple[float, float, str]], max_words: int = 25) -> 
             flush()
     flush()
     return sentences
+
+
+# ── スクリプト（自分で用意した英文・和訳） ──────────────
+
+JAPANESE = re.compile(r"[\u3040-\u30ff\u3400-\u9fff\uff01-\uff60]")
+SPEAKER = re.compile(r"^(?:\*\*)?([A-Za-z][A-Za-z0-9 .]{0,19})(?:\*\*)?\s*[:：]\s+")
+
+
+def script_path(audio: Path) -> Path:
+    return audio.with_suffix(".txt")
+
+
+def script_hash(audio: Path) -> str:
+    return hashlib.sha1(script_path(audio).read_bytes()).hexdigest()[:12]
+
+
+def parse_script(text: str) -> list[dict]:
+    """英文 1 行 = 1 文。その次の行が日本語ならその文の和訳。空行や見出し記号は無視する"""
+    lines = [line.strip() for line in text.lstrip("\ufeff").splitlines()]
+    lines = [line for line in lines if not line.startswith("#")]  # Markdown の見出し
+    lines = [re.sub(r"^[-*>•]\s+", "", line).replace("**", "").strip() for line in lines]
+    # 「Host: ...」のような話者名は、同じ名前が何度も出てくるときだけ外す（「Note: ...」のような文を壊さないため）
+    labels = [m.group(1) for line in lines if (m := SPEAKER.match(line))]
+    common = {label for label in labels if labels.count(label) >= 3}
+    items: list[dict] = []
+    for line in lines:
+        if not line:
+            continue
+        if JAPANESE.search(line):
+            if items:  # 英文より前の日本語（タイトルなど）は無視
+                items[-1]["ja"] = (items[-1].get("ja", "") + line).strip()
+            continue
+        if (m := SPEAKER.match(line)) and m.group(1) in common:
+            line = line[m.end():]
+        items.append({"text": line})
+    return items
+
+
+def _norm(word: str) -> str:
+    return re.sub(r"[^a-z0-9']", "", word.lower().replace("’", "'"))
+
+
+def align(items: list[dict], heard: list[list], duration: float) -> list[dict]:
+    """スクリプトの単語に、聞き取った単語（[開始, 終了, 語]）の時刻を割り当てる。
+    一致した語はその時刻、聞き間違えた語は対応する範囲を按分、聞き取れなかった語は前後の間を按分"""
+    tokens = [(i, w) for i, item in enumerate(items) for w in item["text"].split()]
+    times: list[tuple[float, float] | None] = [None] * len(tokens)
+    heard_any = [False] * len(items)  # 音声と対応がとれた語があるか
+    a = [_norm(w[2]) for w in heard]
+    b = [_norm(w) for _, w in tokens]
+    for tag, i1, i2, j1, j2 in difflib.SequenceMatcher(None, a, b, autojunk=False).get_opcodes():
+        if tag == "equal":
+            for k in range(j2 - j1):
+                times[j1 + k] = (heard[i1 + k][0], heard[i1 + k][1])
+                heard_any[tokens[j1 + k][0]] = True
+        elif tag == "replace":
+            start, end = heard[i1][0], heard[i2 - 1][1]
+            step = (end - start) / (j2 - j1)
+            for k in range(j2 - j1):
+                times[j1 + k] = (start + step * k, start + step * (k + 1))
+    # 残り（聞き取れなかった語）は前後の時刻の間に並べる
+    j = 0
+    while j < len(times):
+        if times[j] is not None:
+            j += 1
+            continue
+        k = j
+        while k < len(times) and times[k] is None:
+            k += 1
+        start = times[j - 1][1] if j > 0 else 0.0
+        end = times[k][0] if k < len(times) else max(duration, start)
+        step = max(end - start, 0) / (k - j)
+        for n in range(j, k):
+            times[n] = (start + step * (n - j), start + step * (n - j + 1))
+        j = k
+    # 時刻が逆戻りしないようにそろえる
+    last = 0.0
+    for n, (s0, e0) in enumerate(times):
+        s0 = max(s0, last)
+        e0 = max(e0, s0)
+        times[n] = (s0, e0)
+        last = s0
+
+    # 最初と最後の、音声にまったく出てこない行（タイトルやメモ）は外す
+    first = heard_any.index(True) if True in heard_any else 0
+    last_i = len(items) - 1 - heard_any[::-1].index(True) if True in heard_any else len(items) - 1
+    sentences = []
+    for i, item in enumerate(items):
+        if i < first or i > last_i:
+            continue
+        ws = [[round(times[n][0], 2), round(times[n][1], 2), " " + w] for n, (si, w) in enumerate(tokens) if si == i]
+        if not ws:
+            continue
+        sentence = {"start": ws[0][0], "end": ws[-1][1], "text": item["text"], "words": ws}
+        if item.get("ja"):
+            sentence["ja"] = item["ja"]
+        sentences.append(sentence)
+    return sentences
+
+
+def apply_script(audio: Path, data: dict) -> bool:
+    """スクリプトがあり、前回から変わっていれば文を作り直す"""
+    path = script_path(audio)
+    if not path.exists() or data.get("scriptHash") == script_hash(audio):
+        return False
+    items = parse_script(path.read_text("utf-8", errors="replace"))
+    if not items:
+        print(f"  {path.name} に英文が見つからないため使いません")
+        return False
+    heard = [w for s in data["sentences"] for w in s["words"]]
+    data["sentences"] = align(items, heard, data["duration"])
+    data["scriptHash"] = script_hash(audio)
+    with_ja = sum("ja" in s for s in data["sentences"])
+    print(f"  スクリプト {path.name}: {len(data['sentences'])} 文（和訳あり {with_ja}）")
+    return True
 
 
 # ── Gemini（和訳・タイトル） ────────────────────────
@@ -256,6 +379,9 @@ def process(audio: Path) -> None:
         }
         save(path, data)
         print(f"  {len(words)} words, {len(data['sentences'])} sentences ({time.time() - started:.0f}s)")
+
+    if apply_script(audio, data):
+        save(path, data)
 
     if GEMINI_API_KEY:
         if data["title"] == default_title(audio):
