@@ -32,7 +32,8 @@ CONVERT_EXT = {".wav", ".flac"}
 
 WHISPER_MODEL = os.environ.get("WHISPER_MODEL") or "small.en"
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "").strip()
-GEMINI_MODEL = os.environ.get("GEMINI_MODEL") or "gemini-flash-latest"
+# 先頭から順に試し、混雑していたら次のモデルへ（環境変数 GEMINI_MODEL で先頭を指定できる）
+GEMINI_MODELS = list(dict.fromkeys(m for m in [os.environ.get("GEMINI_MODEL"), "gemini-flash-latest", "gemini-flash-lite-latest"] if m))
 TRANSLATE_BATCH = 40
 
 
@@ -157,28 +158,34 @@ def to_sentences(words: list[tuple[float, float, str]], max_words: int = 25) -> 
 
 
 def gemini(prompt: str, as_json: bool) -> str:
+    """混雑（429 / 5xx）やタイムアウトは待って再試行し、それでもだめなら次のモデルに切り替える"""
     body = {"contents": [{"parts": [{"text": prompt}]}]}
     if as_json:
         body["generationConfig"] = {"responseMimeType": "application/json"}
-    req = urllib.request.Request(
-        f"https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_MODEL}:generateContent",
-        data=json.dumps(body).encode(),
-        headers={"Content-Type": "application/json", "x-goog-api-key": GEMINI_API_KEY},
-    )
-    for attempt in range(5):
-        try:
-            with urllib.request.urlopen(req, timeout=120) as res:
-                data = json.load(res)
-            return data["candidates"][0]["content"]["parts"][0]["text"]
-        except urllib.error.HTTPError as e:
-            # 429（無料枠のレート制限）と 5xx は待って再試行
-            if e.code in (429, 500, 502, 503, 504) and attempt < 4:
+    last_error = ""
+    for model in GEMINI_MODELS:
+        req = urllib.request.Request(
+            f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent",
+            data=json.dumps(body).encode(),
+            headers={"Content-Type": "application/json", "x-goog-api-key": GEMINI_API_KEY},
+        )
+        for attempt in range(3):
+            try:
+                with urllib.request.urlopen(req, timeout=180) as res:
+                    data = json.load(res)
+                return data["candidates"][0]["content"]["parts"][0]["text"]
+            except urllib.error.HTTPError as e:
+                if e.code not in (429, 500, 502, 503, 504):
+                    raise RuntimeError(f"Gemini API error {e.code}: {e.read().decode()[:500]}") from None
+                last_error = f"{model}: {e.code}"
+            except (TimeoutError, urllib.error.URLError) as e:
+                last_error = f"{model}: {e}"
+            if attempt < 2:
                 wait = 20 * (attempt + 1)
-                print(f"  Gemini API {e.code}, {wait}s 待って再試行")
+                print(f"  {last_error}, {wait}s 待って再試行")
                 time.sleep(wait)
-                continue
-            raise RuntimeError(f"Gemini API error {e.code}: {e.read().decode()[:500]}") from None
-    raise RuntimeError("unreachable")
+        print(f"  {model} が応答しないため、次のモデルを試します")
+    raise RuntimeError(f"Gemini API が混雑していて応答がありません（{last_error}）")
 
 
 def translate(sentences: list[dict]) -> None:
@@ -223,6 +230,10 @@ def default_title(audio: Path) -> str:
     return re.sub(r"[-_]+", " ", audio.stem).strip()
 
 
+class TranslationError(Exception):
+    """文字起こしはできたが和訳に失敗した（次回の実行で再試行される）"""
+
+
 def process(audio: Path) -> None:
     print(f"[podcast] {audio.name}")
     if audio.suffix.lower() in CONVERT_EXT:
@@ -252,6 +263,8 @@ def process(audio: Path) -> None:
                 print(f"  タイトル生成に失敗: {e}")
         try:
             translate(data["sentences"])
+        except RuntimeError as e:
+            raise TranslationError(e) from None
         finally:
             save(path, data)  # 途中で失敗しても訳せた分は残す（残りは次回）
 
@@ -266,13 +279,19 @@ def main() -> None:
         return
     if not GEMINI_API_KEY:
         print("[podcast] GEMINI_API_KEY が未設定のため、和訳なしで文字起こしだけ行います")
-    failed = []
+    failed, untranslated = [], []
     for audio in todo:
         try:
             process(audio)
+        except TranslationError as e:
+            print(f"  和訳に失敗（次回の実行で再試行）: {e}")
+            untranslated.append(audio.name)
         except Exception as e:  # 1 本の失敗で他のエピソードを止めない
             print(f"  失敗: {e}")
             failed.append(audio.name)
+    if untranslated:
+        # 和訳がなくても再生はできるので、サイトの公開は止めない
+        print(f"::warning::和訳できなかったエピソード: {', '.join(untranslated)}（次に Actions が動いたときに再試行します）")
     if failed:
         sys.exit(f"[podcast] 失敗: {', '.join(failed)}")
 
