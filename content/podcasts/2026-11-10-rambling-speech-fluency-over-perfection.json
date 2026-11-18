@@ -61,12 +61,12 @@
      " evenings."
     ]
    ],
-   "ja": "今日から、夕方に英語の練習を始めることにしました。"
+   "ja": "今日から、夜に英語を練習することにしました。"
   },
   {
    "start": 4.94,
    "end": 9.34,
-   "text": "I've been listening to Luke's English podcast recently, and it really inspired me.",
+   "text": "I've been listening to Luke's English Podcast recently, and it really inspired me.",
    "words": [
     [
      4.94,
@@ -101,7 +101,7 @@
     [
      6.48,
      6.78,
-     " podcast"
+     " Podcast"
     ],
     [
      6.78,
@@ -134,7 +134,7 @@
      " me."
     ]
    ],
-   "ja": "最近「ルークの英語ポッドキャスト」を聴いていて、本当に刺激を受けたからです。"
+   "ja": "最近、Luke's English Podcastを聴いていて、すごく刺激を受けたんです。"
   },
   {
    "start": 10.5,
@@ -222,7 +222,7 @@
      " week."
     ]
    ],
-   "ja": "ルークはイギリス英語の話し手で、週に1回新しいエピソードを配信しています。"
+   "ja": "ルークはイギリス英語を話す人で、週に1回エピソードを配信しています。"
   },
   {
    "start": 15.72,
@@ -315,7 +315,7 @@
      " entertaining."
     ]
    ],
-   "ja": "各エピソードは約1時間の長さで、内容は分かりやすく、本当に楽しめます。"
+   "ja": "1エピソードは約1時間で、内容はわかりやすくてとても楽しいです。"
   },
   {
    "start": 22.32,
@@ -378,7 +378,7 @@
      " listeners."
     ]
    ],
-   "ja": "前回のエピソードは、リスナーから寄せられた怪談についての話でした。"
+   "ja": "前回のエピソードは、リスナーから寄せられたゴーストストーリーについてでした。"
   },
   {
    "start": 26.82,
@@ -421,12 +421,12 @@
      " speech."
     ]
    ],
-   "ja": "今週のエピソードは、とりとめのないスピーチについてでした。"
+   "ja": "今週のエピソードはランブリングスピーチについてでした。"
   },
   {
    "start": 30.92,
    "end": 36.1,
-   "text": "It means speaking with no script, no preparation, and no AI, just talking freely.",
+   "text": "It means speaking with no script, no preparation, and no AI — just talking freely.",
    "words": [
     [
      30.92,
@@ -481,7 +481,12 @@
     [
      34.42,
      34.74,
-     " AI,"
+     " AI"
+    ],
+    [
+     34.74,
+     35.1,
+     " —"
     ],
     [
      35.1,
@@ -499,7 +504,7 @@
      " freely."
     ]
    ],
-   "ja": "それは、台本も準備もAIもなく、ただ自由に話すことを意味します。"
+   "ja": "台本も準備もAIも使わず、ただ自由に話すスタイルのことです。"
   },
   {
    "start": 37.38,
@@ -572,7 +577,7 @@
      " tongue."
     ]
    ],
-   "ja": "ルークは、母語ではない言語を練習するのにそれがとても良いと言っています。"
+   "ja": "ルークは、母語以外の言語を練習するのにとても良いと言っていました。"
   },
   {
    "start": 42.0,
@@ -665,12 +670,12 @@
      " perfect."
     ]
    ],
-   "ja": "フォーマルな場面では、あなたの英語は誰かに評価されるため、完璧を目指してしまいます。"
+   "ja": "フォーマルな場では誰かに評価されるので、完璧に話そうとしてしまいます。"
   },
   {
    "start": 48.32,
    "end": 53.04,
-   "text": "But when you're speaking to yourself, you don't need to be perfect, you just need to be fluent.",
+   "text": "But when you're speaking to yourself, you don't need to be perfect — you just need to be fluent.",
    "words": [
     [
      48.32,
@@ -730,7 +735,12 @@
     [
      51.12,
      51.52,
-     " perfect,"
+     " perfect"
+    ],
+    [
+     51.52,
+     51.84,
+     " —"
     ],
     [
      51.84,
@@ -763,7 +773,7 @@
      " fluent."
     ]
    ],
-   "ja": "しかし、独り言を話すときは、完璧である必要はなく、ただ流暢であればよいのです。"
+   "ja": "でも自分に向けて話すときは、完璧である必要はなく、ただ流暢に話せればいいんです。"
   },
   {
    "start": 53.96,
@@ -796,12 +806,12 @@
      " me."
     ]
    ],
-   "ja": "その言葉がとても心に響きました。"
+   "ja": "それが、すごく心に刺さりました。"
   },
   {
    "start": 56.54,
    "end": 63.12,
-   "text": "So I decided to practice English by talking to myself, without aiming for perfection, just for fluency.",
+   "text": "So I decided to practice English by talking to myself, without aiming for perfection — just for fluency.",
    "words": [
     [
      56.54,
@@ -871,7 +881,12 @@
     [
      61.36,
      61.9,
-     " perfection,"
+     " perfection"
+    ],
+    [
+     61.9,
+     62.28,
+     " —"
     ],
     [
      62.28,
@@ -889,7 +904,8 @@
      " fluency."
     ]
    ],
-   "ja": "だから私は、完璧を目指すのではなく、ただ流暢さを求めて、独り言を言いながら英語の練習をすることにしました。"
+   "ja": "だから、完璧を目指さずに、ただ流暢さを目指して、ひとり英語を話す練習をすることにしました。"
   }
- ]
+ ],
+ "scriptHash": "a1630b69a58f"
 }

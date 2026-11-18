@@ -45,7 +45,8 @@
      2.32,
      " morning."
     ]
-   ]
+   ],
+   "ja": "今日のテーマは、今朝の通勤についてです。"
   },
   {
    "start": 3.44,
@@ -142,12 +143,13 @@
      8.74,
      " half."
     ]
-   ]
+   ],
+   "ja": "毎日、鎌倉のオフィスへ通勤していて、片道1時間半ほどかかります。"
   },
   {
    "start": 9.74,
    "end": 15.26,
-   "text": "I use the train and bus, so I have to leave home quite early, around 640 in the morning.",
+   "text": "I use the train and bus, so I have to leave home quite early — around 6:40 in the morning.",
    "words": [
     [
      9.74,
@@ -217,7 +219,12 @@
     [
      12.94,
      13.34,
-     " early,"
+     " early"
+    ],
+    [
+     13.34,
+     13.74,
+     " —"
     ],
     [
      13.74,
@@ -227,7 +234,7 @@
     [
      14.0,
      14.64,
-     " 640"
+     " 6:40"
     ],
     [
      14.64,
@@ -244,7 +251,8 @@
      15.26,
      " morning."
     ]
-   ]
+   ],
+   "ja": "電車とバスを使うため、朝6時40分頃にはかなり早く家を出なければなりません。"
   },
   {
    "start": 16.24,
@@ -341,7 +349,8 @@
      21.3,
      " son."
     ]
-   ]
+   ],
+   "ja": "そんなに早く出るためには、家事を急いで片付けて、息子から離れなければなりません。"
   },
   {
    "start": 22.36,
@@ -423,7 +432,8 @@
      25.98,
      " book."
     ]
-   ]
+   ],
+   "ja": "息子はいつも、ハグやキスをせがんだり、本を読んでほしがったりします。"
   },
   {
    "start": 26.8,
@@ -490,12 +500,13 @@
      31.08,
      " leave."
     ]
-   ]
+   ],
+   "ja": "本当につらい瞬間で、私が出た後に泣いてしまうこともあります。"
   },
   {
    "start": 32.3,
    "end": 37.52,
-   "text": "Recently, I discovered that if I take the romance car, I can save 10 minutes on my commute.",
+   "text": "Recently, I discovered that if I take the Romance Car, I can save 10 minutes on my commute.",
    "words": [
     [
      32.3,
@@ -540,12 +551,12 @@
     [
      34.66,
      35.04,
-     " romance"
+     " Romance"
     ],
     [
      35.04,
      35.42,
-     " car,"
+     " Car,"
     ],
     [
      35.72,
@@ -587,7 +598,8 @@
      37.52,
      " commute."
     ]
-   ]
+   ],
+   "ja": "最近、ロマンスカーを使えば通勤時間を10分短縮できることに気づきました。"
   },
   {
    "start": 38.56,
@@ -649,12 +661,13 @@
      41.72,
      " one."
     ]
-   ]
+   ],
+   "ja": "普通の電車より速くて快適な特急列車です。"
   },
   {
    "start": 42.58,
    "end": 49.08,
-   "text": "It runs from Sagamiono to Fujisawa, and using it gives me 20 extra minutes with my son in the morning.",
+   "text": "It runs from Sagami-Ono to Fujisawa, and using it gives me 20 extra minutes with my son in the morning.",
    "words": [
     [
      42.58,
@@ -674,7 +687,7 @@
     [
      43.5,
      44.28,
-     " Sagamiono"
+     " Sagami-Ono"
     ],
     [
      44.28,
@@ -756,7 +769,8 @@
      49.08,
      " morning."
     ]
-   ]
+   ],
+   "ja": "相模大野から藤沢まで走っていて、使うと朝、息子と過ごせる時間が20分増えます。"
   },
   {
    "start": 49.98,
@@ -813,7 +827,8 @@
      53.06,
      " minutes."
     ]
-   ]
+   ],
+   "ja": "そこで今日は、その20分を大切に使いました。"
   },
   {
    "start": 54.16,
@@ -875,7 +890,8 @@
      56.5,
      " breakfast."
     ]
-   ]
+   ],
+   "ja": "膝の上に座らせて、朝ごはんを食べさせました。"
   },
   {
    "start": 57.66,
@@ -932,7 +948,8 @@
      59.88,
      " him."
     ]
-   ]
+   ],
+   "ja": "ぎゅっと抱きしめて、大好きだよと伝えました。"
   },
   {
    "start": 60.78,
@@ -979,7 +996,8 @@
      63.0,
      " treatment."
     ]
-   ]
+   ],
+   "ja": "呼吸の治療も手伝いました。"
   },
   {
    "start": 63.98,
@@ -1066,12 +1084,13 @@
      69.22,
      " nebulizer."
     ]
-   ]
+   ],
+   "ja": "気管支に関係する病気があって、ネブライザーで薬を吸入しなければならないのです。"
   },
   {
    "start": 70.34,
    "end": 75.52,
-   "text": "After that, I helped him brush his teeth, said goodbye, and walked to Aiko Ishida station.",
+   "text": "After that, I helped him brush his teeth, said goodbye, and walked to Aiko-Ishida Station.",
    "words": [
     [
      70.34,
@@ -1140,25 +1159,21 @@
     ],
     [
      74.4,
-     74.72,
-     " Aiko"
-    ],
-    [
-     74.72,
      75.04,
-     " Ishida"
+     " Aiko-Ishida"
     ],
     [
      75.04,
      75.52,
-     " station."
+     " Station."
     ]
-   ]
+   ],
+   "ja": "それから歯磨きを手伝い、さよならを言い、愛甲石田駅まで歩きました。"
   },
   {
    "start": 76.52,
    "end": 81.18,
-   "text": "I took the train from Aiko Ishida to Sagamiono, then boarded the romance car.",
+   "text": "I took the train from Aiko-Ishida to Sagami-Ono, then boarded the Romance Car.",
    "words": [
     [
      76.52,
@@ -1187,13 +1202,8 @@
     ],
     [
      77.7,
-     78.04,
-     " Aiko"
-    ],
-    [
-     78.04,
      78.42,
-     " Ishida"
+     " Aiko-Ishida"
     ],
     [
      78.42,
@@ -1203,7 +1213,7 @@
     [
      78.64,
      79.44,
-     " Sagamiono,"
+     " Sagami-Ono,"
     ],
     [
      79.68,
@@ -1223,14 +1233,15 @@
     [
      80.44,
      80.78,
-     " romance"
+     " Romance"
     ],
     [
      80.78,
      81.18,
-     " car."
+     " Car."
     ]
-   ]
+   ],
+   "ja": "愛甲石田から相模大野まで電車に乗り、ロマンスカーに乗り換えました。"
   },
   {
    "start": 82.18,
@@ -1307,12 +1318,13 @@
      85.68,
      " seat."
     ]
-   ]
+   ],
+   "ja": "いつも先頭車両に乗るので、いつもの席に向かいました。"
   },
   {
    "start": 86.68,
    "end": 92.62,
-   "text": "The romance car usually has very few passengers, so I normally get two seats all to myself.",
+   "text": "The Romance Car usually has very few passengers, so I normally get two seats all to myself.",
    "words": [
     [
      86.68,
@@ -1322,12 +1334,12 @@
     [
      86.96,
      87.38,
-     " romance"
+     " Romance"
     ],
     [
      87.38,
      87.76,
-     " car"
+     " Car"
     ],
     [
      87.76,
@@ -1399,7 +1411,8 @@
      92.62,
      " myself."
     ]
-   ]
+   ],
+   "ja": "ロマンスカーはたいてい乗客が少ないので、普段は2席を独り占めにできます。"
   },
   {
    "start": 93.72,
@@ -1486,7 +1499,8 @@
      98.98,
      " work."
     ]
-   ]
+   ],
+   "ja": "窓際に座って景色を楽しむと、仕事前に気持ちがリフレッシュされます。"
   },
   {
    "start": 100.02,
@@ -1568,7 +1582,8 @@
      103.84,
      " me."
     ]
-   ]
+   ],
+   "ja": "でも今日は、すぐ隣の通路側の席に男性が座っていました。"
   },
   {
    "start": 104.46,
@@ -1675,12 +1690,13 @@
      110.04,
      " mine."
     ]
-   ]
+   ],
+   "ja": "彼は車両の唯一の他の乗客だったので、なぜ私のすぐ隣を選んだのか驚きました。"
   },
   {
    "start": 111.14,
    "end": 114.94,
-   "text": "I was pretty disappointed, and without thinking, I let out a little A.",
+   "text": "I was pretty disappointed, and without thinking, I let out a little \"eh.\"",
    "words": [
     [
      111.14,
@@ -1745,9 +1761,10 @@
     [
      114.6,
      114.94,
-     " A."
+     " \"eh.\""
     ]
-   ]
+   ],
+   "ja": "かなりがっかりして、思わず小さく「えっ」と声が出てしまいました。"
   },
   {
    "start": 115.76,
@@ -1814,7 +1831,8 @@
      119.16,
      " him."
     ]
-   ]
+   ],
+   "ja": "失礼なことをしたと思いますし、本当に申し訳ない気持ちです。"
   },
   {
    "start": 120.22,
@@ -1846,7 +1864,8 @@
      121.34,
      " again."
     ]
-   ]
+   ],
+   "ja": "もう二度としません。"
   },
   {
    "start": 122.4,
@@ -1873,7 +1892,9 @@
      123.48,
      " today."
     ]
-   ]
+   ],
+   "ja": "今日はここまでです。"
   }
- ]
+ ],
+ "scriptHash": "0f5bcbe4c4c1"
 }
